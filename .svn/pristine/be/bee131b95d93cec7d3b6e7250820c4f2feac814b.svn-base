@@ -1,0 +1,420 @@
+package edu.wm.cs.cs301.slidingpuzzle;
+
+import edu.wm.cs.cs301.slidingpuzzle.PuzzleState;
+import java.util.Arrays;
+import java.util.Random;
+
+public class SimplePuzzleState implements PuzzleState {
+	
+		// creates private to store information 
+		private PuzzleState parent;
+		private Operation operation;
+		private int pathLength;
+		private int[][] PuzzleBoard;
+		
+		public void setOperation(Operation op) {
+      operation = op;
+		}
+		public void setPathLength(int pathLen){
+			pathLength = pathLen;
+		}
+		public void setParent( PuzzleState par){
+			parent = par;
+		}
+		
+		public void PuzzleState() {
+			// 2D array to store the tiles 
+			PuzzleBoard = null;
+			parent = null;
+			operation = null;
+			pathLength = 0;
+
+		}
+
+	@Override
+	public void setToInitialState(int dimension, int numberOfEmptySlots) {
+		
+		//initiate puzzle state 
+		parent = null;
+		operation = null;
+		pathLength = 0; 
+		
+		//Initializes 2D array by placing values on tiles 
+		PuzzleBoard = new int[dimension][dimension];
+		for ( int r = 0; r < dimension; r++) {
+			for ( int c = 0; c < dimension; c++) {
+				PuzzleBoard[r][c] = (int) (r * dimension + c +1) ;
+			}
+		}
+		
+		//set the number of empty slots, should be the bottom right for 1
+		//then for 2 continuing empty slots to the left of previous empty
+		// for 1 empty slot [3,3], for 2 [3,3] and [3,2] for 3 the previous 2 & [3,1]
+	
+		if (numberOfEmptySlots == 1) {
+			PuzzleBoard[dimension-1][dimension-1] = 0;
+		}
+		if (numberOfEmptySlots == 2) {
+			PuzzleBoard[dimension-1][dimension-1]= 0;
+			PuzzleBoard[dimension-1][dimension-2]=  0;
+		}
+		if (numberOfEmptySlots == 3) {
+			PuzzleBoard[dimension-1][dimension-1]= 0; 
+			PuzzleBoard[dimension-1][dimension-2]= 0;
+			PuzzleBoard[dimension-1][dimension-3] = 0;
+			
+		}
+		
+	}
+
+	@Override
+	public int getValue(int row, int column) {
+		//add to make sure the index is within the range
+		if ( row >= 0 && column >= 0 && row < PuzzleBoard.length && column < PuzzleBoard.length){
+			return PuzzleBoard[row][column];
+		}
+		return -1;
+	}
+
+	@Override
+	public PuzzleState getParent() {
+		return parent; 
+	}
+
+	@Override
+	public Operation getOperation() {
+		return operation;
+	}
+
+	@Override
+	public int getPathLength() {
+		return pathLength;
+	}
+
+	@Override
+	public PuzzleState move(int row, int column, Operation op) {
+		
+		// with each case check if the tile next to it is empty to make move
+		//if so return the new state 
+		
+		SimplePuzzleState ps2= new SimplePuzzleState(); 
+		ps2.PuzzleBoard = new int[PuzzleBoard.length][PuzzleBoard.length]; 
+		
+		///initiate the state 
+		for ( int r = 0; r< PuzzleBoard.length; r++) {
+			for ( int c = 0; c< PuzzleBoard.length; c++) {
+				ps2.PuzzleBoard[r][c] = this.getValue(r, c); 
+			}
+		}
+		
+		switch (op){
+		
+		case MOVERIGHT: 
+			if (column +1 < PuzzleBoard.length) {
+				if  ( isEmpty(row + 0, column +1) == true) {
+					int newposition = ps2.PuzzleBoard[row][column];
+					ps2.setParent(this);
+					ps2.PuzzleBoard[row][column]= 0;
+					ps2.PuzzleBoard[row + 0][column +1]= newposition;
+					ps2.setOperation(op);
+					ps2.setPathLength(this.pathLength + 1);
+					return ps2;
+				
+				//ps2.PuzzleBoard[row][column] = PuzzleBoard[row + 0][column + 1]; 
+				//Tile newposition = PuzzleBoard[row][column];
+				///PuzzleBoard[row][column] = PuzzleBoard[row + 0][column + 1];
+				//PuzzleBoard[row + 0][column + 1] = ps2.PuzzleBoard[row][column]; 
+					}
+			  }
+			else{
+				
+			}
+			
+			break;
+		case MOVELEFT:
+			if (column -1 >= 0) { 
+				if  ( isEmpty(row + 0, column -1) == true) {
+					int newposition = ps2.PuzzleBoard[row][column];
+					ps2.setParent(this);
+					ps2.PuzzleBoard[row][column]= 0;
+					ps2.PuzzleBoard[row + 0][column -1]= newposition;
+					ps2.setOperation(op);
+					ps2.setPathLength(this.pathLength + 1);
+					return ps2;
+				}
+			}
+			else{
+				return null;
+			}
+			
+			break;
+		case MOVEUP:
+			if (row -1 >= 0){
+				if  ( isEmpty(row - 1, column + 0 ) == true) {
+					int newposition = ps2.PuzzleBoard[row][column];
+					ps2.setParent(this);
+					ps2.PuzzleBoard[row][column]= 0;
+					ps2.PuzzleBoard[row -1 ][column + 0]= newposition;
+					ps2.setOperation(op);
+					ps2.setPathLength(this.pathLength + 1);
+					return ps2;
+				}
+			}
+			else{
+				return null;
+			}
+			break;
+		case MOVEDOWN:
+			if (row +1 < PuzzleBoard.length){
+				if  ( isEmpty(row + 1 , column + 0) == true){
+					int newposition = ps2.PuzzleBoard[row][column];
+					ps2.setParent(this);
+					ps2.PuzzleBoard[row][column]= 0;
+					ps2.PuzzleBoard[row + 1][column + 0]= newposition;
+					ps2.setOperation(op);
+					ps2.setPathLength(this.pathLength + 1);
+					return ps2;
+				}
+			}
+			else{
+				return null;
+			}
+			break;
+		} 
+		
+	return null;
+	}
+
+	@Override
+	public PuzzleState drag(int startRow, int startColumn, int endRow, int endColumn) {
+		
+		PuzzleState ps1 = new SimplePuzzleState();
+		ps1 = this;
+		
+		int spaceBetween = Math.abs(endRow - startRow); 
+		int spaceBetween2 = Math.abs(endColumn - startColumn);
+		
+		int distance = (spaceBetween + spaceBetween2);
+		
+		boolean flag = true; 
+		
+		// while there are multiple empty slots to move 
+		while (( distance != 0) && flag)  {
+			
+
+		//check to see if positions are adjacent moving left ( 0, -1) using the move class
+			if (isEmpty(startRow, startColumn - 1) == true && distance > 0 ){
+				 ps1 = ps1.move(startRow, startColumn, Operation.MOVELEFT);
+				 startColumn -= 1;
+				 spaceBetween2 += 1; 
+				 distance -=  1; 
+				 if (distance == 0){
+					 flag = false;
+				 }
+			}
+		//check to see if positions are adjacent moving right ( -1,0) using the move class
+			if (isEmpty(startRow - 1, startColumn )== true && distance > 0 ){
+				 ps1 = ps1.move(startRow, startColumn, Operation.MOVEUP);
+				 startRow -= 1;
+				 spaceBetween += 1; 
+				 distance -=  1; 
+				 if (distance == 0){
+					 flag = false;
+				 }
+
+			}
+			
+		//check to see if positions are adjacent moving right ( 0,1) using the move class
+			if (isEmpty(startRow, startColumn +1) == true && distance > 0 ){
+				 ps1 = ps1.move(startRow, startColumn, Operation.MOVERIGHT);
+				 startColumn += 1;
+				 spaceBetween2 -= 1; 
+				 distance -=  1; 
+				 if (distance == 0){
+					 flag = false;
+				 }
+						 
+			}
+			
+			//check to see if positions are adjacent moving right ( 1,0) using the move class
+			if (isEmpty(startRow + 1 , startColumn) == true && distance > 0 ){
+				 ps1 = ps1.move(startRow, startColumn, Operation.MOVEDOWN);
+				 startRow += 1;
+				 spaceBetween -= 1; 
+				 distance -=  1; 
+				 if (distance == 0){
+					 flag = false;
+				 }
+			}
+			
+		}
+		
+	return ps1; 
+	}
+	
+    //class that chooses random movement of left, right, up, down 
+		//helper class for shuffle 
+		private Operation randomMove(){
+			
+			Operation move = null;
+			Random rand = new Random();
+			int number = rand.nextInt(4); // will randomly choose 0,1,2 or 3 
+			
+			
+			//assign random generated number to a movement 
+			switch (number){
+			case 0:
+				move = Operation.MOVEDOWN;
+				break; 
+				
+			case 1:
+				move = Operation.MOVELEFT;
+				break;
+				
+			case 2:
+				move = Operation.MOVERIGHT;
+				break;
+				
+			case 3: 
+				move = Operation.MOVEUP;
+				break;
+			}
+			
+			return move;
+		}
+		
+		// randomly generating empty slots 
+		private int[ ] emptyRandom(){
+			int[ ] empty1 = null; 
+			int[ ] empty2 = null;
+			int[ ] empty3 = null; 
+			
+			Random randNumbers = new Random();
+			int number = 0;
+			
+			int x = 0;
+			for (int r = 0; r < PuzzleBoard.length; r++){
+				for (int c = 0; c < PuzzleBoard.length; c++){
+					if (isEmpty(r,c) ==true){
+						if (x==0) {
+							empty1 = new int [2];
+							empty1[0] = r;
+							empty1[1] = c;
+						}
+						else if (x ==1) { 
+							empty2 = new int [2];
+							empty2[0] = r;
+							empty2[1] = c;
+						}
+						else if ( x==2) {
+							empty3 = new int [2];
+							empty3[0] = r;
+							empty3[1] = c;
+						}
+						x++;
+						
+					}
+				}
+			}
+			
+			if (x==1){
+				return empty1;
+			}
+			else if ( x == 2){
+				number = randNumbers.nextInt(2);
+			}
+			else {
+				number = randNumbers.nextInt(3);
+			}
+			switch ( number) {
+			case 0:
+				return empty1;
+			case 1:
+				return empty2;
+			case 2:
+				return empty3;
+			}
+			return null;
+		}
+
+	@Override
+	public PuzzleState shuffleBoard(int pathLength) {
+		
+		//main method 
+		SimplePuzzleState ps1 = new SimplePuzzleState();
+		
+		ps1.PuzzleBoard = new int[PuzzleBoard.length][PuzzleBoard.length];
+		for (int r = 0; r< PuzzleBoard.length; r++){
+			for (int c = 0; c< PuzzleBoard.length; c++){
+				ps1.PuzzleBoard[r][c] = this.getValue(r, c);
+			}
+		}
+		
+		int x = 0;
+		while ( x < pathLength){
+			Operation move = ps1.randomMove();
+			int[] emptySpace = ps1.emptyRandom();
+			int row = emptySpace[0];
+			int column = emptySpace[1];
+			
+			//
+			switch(move) {
+			case MOVERIGHT:
+				column -= 1;
+				break;
+			case MOVELEFT:
+				column += 1;
+				break;
+			case MOVEUP:
+				row += 1;
+				break;
+			case MOVEDOWN:
+				row -=1; 
+				break;
+			}
+			if (ps1.getValue(row, column) > 0){
+				ps1 = (SimplePuzzleState) ps1.move(row, column, move);
+				x ++;
+			}
+		}
+		
+	return ps1;
+	}
+
+	@Override
+	public boolean isEmpty(int row, int column) {
+		if ( row >= 0 && column >= 0 && row < PuzzleBoard.length && column < PuzzleBoard.length){
+			if (PuzzleBoard[row][column] == 0 ){
+				return true;
+		 }
+		}
+		return false; 
+	}
+ 
+	@Override
+	public PuzzleState getStateWithShortestPath() {
+		return this;
+	}
+	
+	@Override
+	public int hashCode(){
+		int result = 17;
+		result = 31 * result + Arrays.deepHashCode(PuzzleBoard);
+	return result;
+		
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if ( getClass() != obj.getClass())
+			return false;
+		SimplePuzzleState other = (SimplePuzzleState) obj;
+		if (!Arrays.deepEquals(PuzzleBoard,other.PuzzleBoard))
+			return false;
+	return true;
+	}
+}
+

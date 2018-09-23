@@ -1,0 +1,122 @@
+package edu.wm.cs.cs301.slidingpuzzle;
+
+import edu.wm.cs.cs301.slidingpuzzle.PuzzleState;
+
+public class SimplePuzzleState implements PuzzleState {
+		// creates private to store information 
+		private int row;
+		private int col;
+		private PuzzleState parent;
+		private Operation operation;
+		private int pathLength;
+		private Tile[][] PuzzleBoard;
+		// private TilePosition empty;
+		
+		private class Tile{
+			public int x;
+			public int y;
+			public int value; 
+				
+			public Tile(int x, int y, int value){
+				this.x = x;
+				this.y = y;
+				this.value = value;
+			}
+		}
+		
+		public void PuzzleState() {
+			// 2D array to store the tiles 
+			PuzzleBoard = new Tile[row][col];
+			parent = null;
+			operation = null;
+			pathLength = 0;
+
+		}
+
+	@Override
+	public void setToInitialState(int dimension, int numberOfEmptySlots) {
+		parent = null;
+		operation = null;
+		pathLength = 0;
+		
+		//Initializes 2D array by placing values on tiles 
+		PuzzleBoard = new Tile[dimension][dimension];
+		for ( int r = 0; r < dimension; r++) {
+			for ( int c = 0; c < dimension; c++) {
+				PuzzleBoard[r][c] = new Tile(r, c, r * dimension + c +1);
+			}
+		}
+		
+		//set the number of empty slots, should be the bottom right for 1
+		//then for 2 continuing empty slots to the left of previous empty
+		// for 1 empty slot [3,3], for 2 [3,3] and [3,2] for 3 the previous 2 & [3,1]
+		if (numberOfEmptySlots == 1) {
+			PuzzleBoard[dimension-1][dimension-1] = new Tile(dimension-1, dimension-1, 0);
+		}
+		if (numberOfEmptySlots == 2) {
+			PuzzleBoard[dimension-1][dimension-1]= new Tile(dimension-1, dimension-1, 0);
+			PuzzleBoard[dimension-1][dimension-2]=  new Tile(dimension-1, dimension-2, 0);
+		}
+		if (numberOfEmptySlots == 3) {
+			PuzzleBoard[dimension-1][dimension-1]= new Tile(dimension-1, dimension-1, 0); 
+			PuzzleBoard[dimension-1][dimension-2]= new Tile(dimension-1, dimension-2, 0);
+			PuzzleBoard[dimension-1][dimension-3] = new Tile(dimension-1, dimension-3, 0);
+			
+		}
+		
+	}
+
+	@Override
+	public int getValue(int row, int column) {
+		return PuzzleBoard[row][column].value;
+	}
+
+	@Override
+	public PuzzleState getParent() {
+		return parent; 
+	}
+
+	@Override
+	public Operation getOperation() {
+		return operation;
+	}
+
+	@Override
+	public int getPathLength() {
+		return pathLength;
+	}
+
+	@Override
+	public PuzzleState move(int row, int column, Operation op) {
+	// TODO Auto-generated method stub
+	return null;
+	}
+
+	@Override
+	public PuzzleState drag(int startRow, int startColumn, int endRow, int endColumn) {
+	// TODO Auto-generated method stub
+	return null;
+	}
+
+	@Override
+	public PuzzleState shuffleBoard(int pathLength) {
+	// TODO Auto-generated method stub
+	return null;
+	}
+
+	@Override
+	public boolean isEmpty(int row, int column) {
+		if (PuzzleBoard[row][column].value == 0 ){
+			return true;
+		}
+		return false; 
+	}
+ 
+	@Override
+	public PuzzleState getStateWithShortestPath() {
+	// TODO Auto-generated method stub
+	return null;
+	}
+
+}
+

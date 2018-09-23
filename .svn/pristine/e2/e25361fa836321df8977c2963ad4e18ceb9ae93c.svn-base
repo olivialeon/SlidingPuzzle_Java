@@ -1,0 +1,105 @@
+package edu.wm.cs.cs301.slidingpuzzle;
+
+import edu.wm.cs.cs301.slidingpuzzle.PuzzleState;
+
+public class SimplePuzzleState implements PuzzleState {
+		// creates private to store information 
+		private int dimension;
+		private PuzzleState parent;
+		private Operation operation;
+		private int pathLength;
+		
+		//private Tiles(r,c) spaces; //spaces on the board 
+		//private Tiles() emptyTile; // the empty space
+
+		
+		public SimplePuzzleState() {
+			dimension = 0;
+			parent = null;
+			operation = null;
+			pathLength = 0;
+			
+		}
+	
+	// class Tiles for the individuals tiles within the puzzle board b/c they have their own row & col position & value
+	public class Tiles {
+		
+		private int _row;
+		private int _column;
+		private int _value;
+	
+		public Tiles(int r, int col, int val){
+			_row = r;
+			_column = col;
+			_value = val; 
+		}
+		
+		public void setValueOnTile(int val){
+			_value = val;
+		}
+		
+		public int getValueOnTile(){
+			return _value;
+		}
+	}
+
+	@Override
+	public void setToInitialState(int dimension, int numberOfEmptySlots) {
+	// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public int getValue(int row, int column) {
+		return 0;
+		// Title.getValueOnTile()
+	}
+
+	@Override
+	public PuzzleState getParent() {
+		return parent; 
+	}
+
+	@Override
+	public Operation getOperation() {
+		return operation;
+	}
+
+	@Override
+	public int getPathLength() {
+		return pathLength;
+	}
+
+	@Override
+	public PuzzleState move(int row, int column, Operation op) {
+	// TODO Auto-generated method stub
+	return null;
+	}
+
+	@Override
+	public PuzzleState drag(int startRow, int startColumn, int endRow, int endColumn) {
+	// TODO Auto-generated method stub
+	return null;
+	}
+
+	@Override
+	public PuzzleState shuffleBoard(int pathLength) {
+	// TODO Auto-generated method stub
+	return null;
+	}
+
+	@Override
+	public boolean isEmpty(int row, int column) {
+	// TODO Auto-generated method stub
+	return false;
+	}
+
+	@Override
+	public PuzzleState getStateWithShortestPath() {
+	// TODO Auto-generated method stub
+	return null;
+	}
+
+}
+
+
